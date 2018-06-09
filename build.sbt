@@ -1,3 +1,5 @@
+crossScalaVersions := Seq("2.11.11", "2.12.6")
+
 def commonSettings(moduleName: String) = Seq(
   name := moduleName,
   organization := "net.petitviolet",
