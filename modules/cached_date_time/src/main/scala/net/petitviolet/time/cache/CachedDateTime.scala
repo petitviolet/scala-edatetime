@@ -1,7 +1,7 @@
 package net.petitviolet.time.cache
 
 import java.util.concurrent.atomic.AtomicReference
-import java.util.{ Timer, TimerTask }
+import java.util.{Timer, TimerTask}
 
 import net.petitviolet.time.EDateTime
 

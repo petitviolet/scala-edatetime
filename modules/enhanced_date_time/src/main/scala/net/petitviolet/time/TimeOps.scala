@@ -12,16 +12,19 @@ object TimeOps {
 
   implicit val epochMillOps: TimeOps[EpochMilliseconds] =
     new TimeOps[EpochMilliseconds] {
-      override def add(first: EpochMilliseconds, second: EpochMilliseconds): EpochMilliseconds =
+      override def add(first: EpochMilliseconds,
+                       second: EpochMilliseconds): EpochMilliseconds =
         EpochMilliseconds(first.value + second.value)
-      override def minus(first: EpochMilliseconds, second: EpochMilliseconds): EpochMilliseconds =
+      override def minus(first: EpochMilliseconds,
+                         second: EpochMilliseconds): EpochMilliseconds =
         EpochMilliseconds(first.value - second.value)
     }
 
   implicit val millOps: TimeOps[Milliseconds] = new TimeOps[Milliseconds] {
     override def add(first: Milliseconds, second: Milliseconds): Milliseconds =
       Milliseconds(first.value + second.value)
-    override def minus(first: Milliseconds, second: Milliseconds): Milliseconds =
+    override def minus(first: Milliseconds,
+                       second: Milliseconds): Milliseconds =
       Milliseconds(first.value - second.value)
   }
 
@@ -40,14 +43,17 @@ object TimeOps {
   }
 }
 
-@implicitNotFound("you should implement TimeOps[T] or `import net.petitviolet.time._`")
+@implicitNotFound(
+  "you should implement TimeOps[T] or `import net.petitviolet.time._`")
 sealed trait TimeOps[T] extends Any {
   def add(first: T, second: T): T
   def minus(first: T, second: T): T
 }
 
 // elapsed milliseconds from 1970/01/01
-case class EpochMilliseconds(value: Long) extends AnyVal with Ordered[EpochMilliseconds] {
+case class EpochMilliseconds(value: Long)
+    extends AnyVal
+    with Ordered[EpochMilliseconds] {
   override def compare(that: EpochMilliseconds): Int =
     this.value compare that.value
 
@@ -76,4 +82,3 @@ case class Day(value: Int) extends AnyVal with Ordered[Day] {
 
   override def compare(that: Day): Int = this.value compare that.value
 }
-

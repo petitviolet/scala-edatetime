@@ -1,27 +1,35 @@
-crossScalaVersions := Seq("2.11.11", "2.12.6")
+val SCALA_VERSION = "2.12.6"
+val GROUP_ID = "net.petitviolet"
+val VERSION = "0.1.2"
 
 def commonSettings(moduleName: String) = Seq(
   name := moduleName,
-  organization := "net.petitviolet",
-  version := "0.1",
-  scalaVersion := "2.12.6",
+  organization := GROUP_ID,
+  version := VERSION,
+  scalaVersion := SCALA_VERSION,
+  crossScalaVersions := Seq("2.11.11", SCALA_VERSION),
+  publishTo := sonatypePublishTo.value,
   testOptions in Test += Tests.Argument("-oDF"),
   javacOptions ++= Seq("-encoding", "UTF-8"),
   scalafmtOnCompile := true,
-  scalafmtSbtCheck := true
+  scalafmtSbtCheck := true,
 )
 
-lazy val dateTimeUtilRoot = (project in file("."))
-  .settings(commonSettings("dateTimeUtilsRoot"))
-  .aggregate(cachedDateTime, dateTimeUtil)
+lazy val enhancedDateTimeRoot = (project in file("."))
+  .settings(commonSettings("enhancedDateTimeRoot"))
+  .aggregate(enhancedDateTimeCache, enhancedDateTime)
 
-lazy val dateTimeUtil = (project in file("modules/date_time_util"))
-  .settings(commonSettings("dateTimeUtil"))
+lazy val enhancedDateTime = (project in file("modules/enhanced_date_time"))
+  .settings(commonSettings("enhanced_date_time"))
 
-lazy val cachedDateTime = (project in file("modules/cached_date_time"))
-  .settings(commonSettings("cachedDateTime"))
-  .dependsOn(dateTimeUtil)
+lazy val enhancedDateTimeCache = (project in file("modules/cached_date_time"))
+  .settings(commonSettings("cached_enhanced_date_time"))
+  .dependsOn(enhancedDateTime)
 
 lazy val example = (project in file("modules/example"))
   .settings(commonSettings("example"))
-.dependsOn(cachedDateTime)
+    .settings(
+      libraryDependencies += "net.petitviolet" % "enhanced_date_time" % VERSION
+    )
+//   .dependsOn(enhancedDateTimeCache)
+
