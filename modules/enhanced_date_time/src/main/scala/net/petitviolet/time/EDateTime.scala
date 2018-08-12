@@ -6,6 +6,7 @@ import java.util.Locale
 
 class EDateTime private (val value: ZonedDateTime) extends Ordered[EDateTime] {
   import EDateTime.ZonedDateTimeHelper
+  import GlobalEDateTimeSettings.zoneId
   import TimeOps._
 
   override def compare(that: EDateTime): Int =
@@ -29,20 +30,22 @@ class EDateTime private (val value: ZonedDateTime) extends Ordered[EDateTime] {
   /**
     * "20161223"
     */
-  lazy val `yyyy-MM-dd`: String = {
-    value.format(EDateTime.`yyyy-MM-dd`)
+  def `yyyy-MM-dd`: String = {
+    value.format(EDateTime.`yyyy-MM-dd`.withZone(zoneId))
   }
 
   /**
     * "2016-12-23 14:15:33"
     */
-  lazy val `yyyy-MM-dd HH:mm:ss`: String = {
-    value.format(EDateTime.`yyyy-MM-dd HH:mm:ss`)
+  def `yyyy-MM-dd HH:mm:ss`: String = {
+    value.format(EDateTime.`yyyy-MM-dd HH:mm:ss`.withZone(zoneId))
   }
 
+  def format(formatter: DateTimeFormatter): String =
+    value.format(formatter)
+
   override lazy val toString: String = {
-    val str = this.`yyyy-MM-dd HH:mm:ss`
-    s"EDateTime($str ${value.getZone.getId})"
+    s"EDateTime($value)"
   }
 
   def asDate: EDate = EDate.apply(value.toLocalDate)
