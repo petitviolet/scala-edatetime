@@ -29,20 +29,23 @@ println(s"${EDateTime.now()(ZoneId.of("America/New_York")}") // or provide zoneI
 import $ivy.$                                          ;
 import net.petitviolet.time._;
 
+@ import java.time.ZoneId
+import java.time.ZoneId
+
 @ EDateTime.now()
 res1: EDateTime = EDateTime(2019-03-03T23:05:39.835801+09:00[Asia/Tokyo])
 
-@ EDateTime.now()(java.time.ZoneId.of("UTC"))
+@ EDateTime.now()(ZoneId.of("UTC"))
 res2: EDateTime = EDateTime(2019-03-03T14:05:48.515310Z[UTC])
 
-@ EDateTime.now()(java.time.ZoneId.of("UTC")).`yyyy-MM-dd HH:mm:ss`
+@ EDateTime.now()(ZoneId.of("UTC")).`yyyy-MM-dd HH:mm:ss`
 res3: String = "2019-03-03 23:06:09"
 
-@ EDateTime.now()(java.time.ZoneId.of("UTC")).`yyyy-MM-dd HH:mm:ss`(java.time.ZoneId.of("UTC"))
+@ EDateTime.now()(ZoneId.of("UTC")).`yyyy-MM-dd HH:mm:ss`(ZoneId.of("UTC"))
 res4: String = "2019-03-03 14:06:24"
 
-@ implicit val zoneId = java.time.ZoneId.of("UTC")
-zoneId: java.time.ZoneId = UTC
+@ implicit val zoneId = ZoneId.of("UTC")
+zoneId: ZoneId = UTC
 
 @ EDateTime.now().`yyyy-MM-dd HH:mm:ss`
 res6: String = "2019-03-03 14:07:00"
@@ -65,6 +68,25 @@ EDateTime(2019-03-03T14:07:20.898141Z[UTC]) : EDateTime(2019-03-03T23:07:20.4755
 EDateTime(2019-03-03T14:07:21.101038Z[UTC]) : EDateTime(2019-03-03T23:07:20.475501+09:00[Asia/Tokyo])
 EDateTime(2019-03-03T14:07:21.304894Z[UTC]) : EDateTime(2019-03-03T23:07:21.276991+09:00[Asia/Tokyo])
 EDateTime(2019-03-03T14:07:21.506776Z[UTC]) : EDateTime(2019-03-03T23:07:21.276991+09:00[Asia/Tokyo])
+
+@ import scala.concurrent.duration.Duration._
+import scala.concurrent.duration.Duration._
+
+@ EDateTime.now() - 100.days; EDateTime.now(); EDateTime.now() + 100.days // +/- operator
+res7_0: EDateTime = EDateTime(2018-11-23T14:11:09.612408Z[UTC])
+res7_1: EDateTime = EDateTime(2019-03-03T14:11:09.612480Z[UTC])
+res7_2: EDateTime = EDateTime(2019-06-11T14:11:09.612485Z[UTC])
+
+@ (EDateTime.now() - 100.days) < EDateTime.now() // compare
+res8: Boolean = true
+
+@ EDateTime.now()(ZoneId.of("UTC")).epochMillis; EDateTime.now()(ZoneId.of("Asia/Tokyo")).epochMillis // epoch milliseconds
+res9_0: EpochMilliseconds = EpochMilliseconds(1551622408081L)
+res9_1: EpochMilliseconds = EpochMilliseconds(1551622408081L)
+
+@ EDateTime.fromEpochMilli(EpochMilliseconds(1551622408081L)); EDateTime.fromEpochMilli(EpochMilliseconds(1551622408081L))(ZoneId.of("Asia/Tokyo"))
+res10_0: EDateTime = EDateTime(2019-03-03T14:13:28.081Z[UTC])
+res10_1: EDateTime = EDateTime(2019-03-03T23:13:28.081+09:00[Asia/Tokyo])
 ```
 
 ## cached date time
