@@ -2,17 +2,21 @@ package net.petitviolet.time
 
 import java.time._
 import java.time.format.DateTimeFormatter
+import java.time.temporal.{ Temporal, TemporalAmount, TemporalUnit }
+import java.util
+import java.util.concurrent.TimeUnit
 
-import scala.util.{Failure, Try}
+import scala.concurrent.duration.Duration
+import scala.util.{ Failure, Try }
 
 class EDate private (val value: LocalDate) extends Ordered[EDate] { self =>
   import EDate.LocalDateHelper
 
   override def compare(that: EDate): Int = self.value.compareTo(that.value)
 
-  def +(day: Day): EDate = new EDate(value.plusDays(day.value))
+  def +(duration: Duration): EDate = new EDate(value.plusDays(duration.toDays))
 
-  def -(day: Day): EDate = new EDate(value.minusDays(day.value))
+  def -(duration: Duration): EDate = new EDate(value.minusDays(duration.toDays))
 
   lazy val epochMillis: EpochMilliseconds = value.epochMills
 
@@ -58,10 +62,10 @@ object EDate {
   def apply(localDateTime: LocalDateTime): EDate =
     new EDate(localDateTime.toLocalDate)
 
-  def now(): EDate = new EDate(LocalDate.now(zoneId))
+  def now(): EDate = new EDate(LocalDate.now(defaultZoneId))
 
   private def pattern(pt: String) =
-    DateTimeFormatter.ofPattern(pt, locale)
+    DateTimeFormatter.ofPattern(pt, defaultLocale)
 
   private lazy val `yyyy_MM_dd`: DateTimeFormatter = pattern("yyyy_MM_dd")
 

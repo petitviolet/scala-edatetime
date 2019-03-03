@@ -2,18 +2,26 @@ package net.petitviolet.time.example
 
 import java.time.ZoneId
 
-import net.petitviolet.time.cache.CachedDateTime
+import net.petitviolet.time.cache.CachedEDateTime
 import net.petitviolet.time.{EDateTime, GlobalEDateTimeSettings}
 
 object example extends App {
   println("=====================")
-  println(s"${EDateTime.now()}")
-  CachedDateTime.init()
-  println(s"now = ${CachedDateTime.now()}")
-  GlobalEDateTimeSettings.zoneId = ZoneId.of("America/New_York")
+  println(s"now(default       ) = ${EDateTime.now()}")
+  println(s"now(new york      ) = ${EDateTime.now()(ZoneId.of("America/New_York"))}")
+  println(s"now(default/cached) = ${CachedEDateTime.now()}")
+
   Thread.sleep(3000L)
-  println(s"now = ${CachedDateTime.now()}")
-  println(s"${EDateTime.now()}")
+  println(s"sleep 3000 milliseconds")
+  println(s"now(default/cached) = ${CachedEDateTime.now()}")
+  println(s"now(default       ) = ${EDateTime.now()}")
+
+  GlobalEDateTimeSettings.defaultZoneId = ZoneId.of("America/New_York")
+  Thread.sleep(1000L)
+  println(s"sleep 1000 milliseconds")
+  println(s"now(new york       ) = ${EDateTime.now()}")
+  println(s"now(new york/cached) = ${CachedEDateTime.now()}")
   println("=====================")
-  CachedDateTime.shutdown()
+  CachedEDateTime.shutdown()
+  println(s"now(new york/stopped cache) = ${CachedEDateTime.now()}")
 }

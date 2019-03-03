@@ -1,12 +1,15 @@
 package net.petitviolet.time
 
 import java.time.format.DateTimeFormatter
-import java.time._
+import java.time.temporal.{ ChronoUnit, TemporalUnit }
+import java.time.{ Duration => _, _ }
 import java.util.Locale
+
+import scala.concurrent.duration.Duration
 
 class EDateTime private (val value: ZonedDateTime) extends Ordered[EDateTime] {
   import EDateTime.ZonedDateTimeHelper
-  import GlobalEDateTimeSettings.zoneId
+  import GlobalEDateTimeSettings.defaultZoneId
   import TimeOps._
 
   override def compare(that: EDateTime): Int =
@@ -14,30 +17,25 @@ class EDateTime private (val value: ZonedDateTime) extends Ordered[EDateTime] {
 
   lazy val epochMillis: EpochMilliseconds = value.epochMilli
 
-  private def -(start: EDateTime): Milliseconds = {
-    val end = this
-    Milliseconds((end.epochMillis - start.epochMillis).value)
+  def +(duration: Duration): EDateTime = {
+    EDateTime(value.plus(duration.toMillis, ChronoUnit.MILLIS))
   }
 
-  def +(day: Day): EDateTime = {
-    EDateTime(value.plusDays(day.value.toLong))
-  }
-
-  def -(day: Day): EDateTime = {
-    EDateTime(value.minusDays(day.value.toLong))
+  def -(duration: Duration): EDateTime = {
+    EDateTime(value.minus(duration.toMillis, ChronoUnit.MILLIS))
   }
 
   /**
     * "20161223"
     */
-  def `yyyy-MM-dd`: String = {
+  def `yyyy-MM-dd`(implicit zoneId: ZoneId = defaultZoneId): String = {
     value.format(EDateTime.`yyyy-MM-dd`.withZone(zoneId))
   }
 
   /**
     * "2016-12-23 14:15:33"
     */
-  def `yyyy-MM-dd HH:mm:ss`: String = {
+  def `yyyy-MM-dd HH:mm:ss`(implicit zoneId: ZoneId = defaultZoneId): String = {
     value.format(EDateTime.`yyyy-MM-dd HH:mm:ss`.withZone(zoneId))
   }
 
@@ -52,10 +50,10 @@ class EDateTime private (val value: ZonedDateTime) extends Ordered[EDateTime] {
 }
 
 object GlobalEDateTimeSettings {
-  @volatile var zoneId: ZoneId = ZoneId.systemDefault()
-  @volatile var locale: Locale = Locale.getDefault
+  @volatile var defaultZoneId: ZoneId = ZoneId.systemDefault()
+  @volatile var defaultLocale: Locale = Locale.getDefault
   def zoneOffset: ZoneOffset =
-    zoneId.getRules.getOffset(Instant.now(Clock.system(zoneId)))
+    defaultZoneId.getRules.getOffset(Instant.now(Clock.system(defaultZoneId)))
 }
 
 object EDateTime {
@@ -64,19 +62,19 @@ object EDateTime {
   def apply(value: ZonedDateTime): EDateTime =
     new EDateTime(value)
 
-  def apply(value: LocalDateTime): EDateTime = {
+  def apply(value: LocalDateTime)(implicit zoneId: ZoneId = defaultZoneId): EDateTime = {
     apply(value.atZone(zoneId))
   }
 
-  def now() = EDateTime(ZonedDateTime.now(zoneId))
+  def now()(implicit zoneId: ZoneId = defaultZoneId) = EDateTime(ZonedDateTime.now(zoneId))
 
   /**
     * [[EpochMilliseconds]]から[[EDateTime]]を作成する
     * @param milliseconds
     * @return
     */
-  def fromEpochMilli(milliseconds: EpochMilliseconds): EDateTime = {
-    val dateTime = ZonedDateTimeHelper.fromEpochMillis(milliseconds)
+  def fromEpochMilli(milliseconds: EpochMilliseconds)(implicit zoneId: ZoneId = defaultZoneId): EDateTime = {
+    val dateTime = ZonedDateTimeHelper.fromEpochMillis(milliseconds)(zoneId)
     EDateTime(dateTime)
   }
 
@@ -85,7 +83,7 @@ object EDateTime {
     * @param value yyyy-MMdd形式の日付
     * @return
     */
-  def `from-yyyy-MM-dd`(value: String): EDateTime = {
+  def `from-yyyy-MM-dd`(value: String)(implicit zoneId: ZoneId = defaultZoneId): EDateTime = {
     require(value.length == 10,
             s"invalid date expression, $value length is not 10(YYYY-MM-DD)")
 
@@ -101,14 +99,14 @@ object EDateTime {
   }
 
   private lazy val `yyyy-MM-dd`: DateTimeFormatter =
-    DateTimeFormatter.ofPattern("yyyy-MM-dd", locale)
+    DateTimeFormatter.ofPattern("yyyy-MM-dd", defaultLocale)
 
   private lazy val `yyyy-MM-dd HH:mm:ss`: DateTimeFormatter =
-    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", locale)
+    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", defaultLocale)
 
-  // 2011/01/01 00:00:00のDateTime
-  lazy val `2011/01/01 00:00:00`: EDateTime =
-    EDateTime(ZonedDateTime.of(2011, 1, 1, 0, 0, 0, 0, zoneId))
+  // 2011/01/01 00:00:00Z+00:00
+  lazy val `2011/01/01 00:00:00UTC`: EDateTime =
+    EDateTime(ZonedDateTime.of(2011, 1, 1, 0, 0, 0, 0, ZoneId.of("GMT")))
 
   private implicit class ZonedDateTimeHelper(val zonedDateTime: ZonedDateTime)
       extends AnyVal {
@@ -118,10 +116,10 @@ object EDateTime {
 
   private object ZonedDateTimeHelper {
     // epoch milliまわりはUTCで計算する
-    def fromEpochMillis(epochMilliseconds: EpochMilliseconds): ZonedDateTime =
+    def fromEpochMillis(epochMilliseconds: EpochMilliseconds)(implicit zoneId: ZoneId = GlobalEDateTimeSettings.defaultZoneId) : ZonedDateTime =
       java.time.Instant
         .ofEpochMilli(epochMilliseconds.value)
-        .atZone(GlobalEDateTimeSettings.zoneId)
+        .atZone(zoneId)
 
     def toEpochMillis(localDateTime: ZonedDateTime): EpochMilliseconds =
       EpochMilliseconds(localDateTime.toInstant.toEpochMilli)
