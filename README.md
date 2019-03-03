@@ -45,3 +45,7 @@ println(s"after = ${CachedDateTime.now()}")
 
 CachedDateTime.shutdown()
 ```
+
+## LICENSE
+
+[Apache-2.0](https://github.com/petitviolet/scala_enhanced_datetime/blob/master/LICENSE)
