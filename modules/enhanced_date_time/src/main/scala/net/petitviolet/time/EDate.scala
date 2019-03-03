@@ -21,15 +21,15 @@ class EDate private (val value: LocalDate) extends Ordered[EDate] { self =>
   lazy val epochMillis: EpochMilliseconds = value.epochMills
 
   /**
-    * "2016-12-23"
-    */
+   * "2016-12-23"
+   */
   lazy val `yyyy-MM-dd`: String = {
     value.format(EDate.`yyyy-MM-dd`)
   }
 
   /**
-    * "20161223"
-    */
+   * "20161223"
+   */
   lazy val `yyyyMMdd`: String = {
     value.format(EDate.`yyyyMMdd`)
   }
@@ -52,9 +52,7 @@ object EDate {
       apply(date)
     }.recoverWith {
       case t: Throwable =>
-        Failure(
-          new Exception(
-            s"String($str}) invalid date format. msg = ${t.getMessage}"))
+        Failure(new Exception(s"String($str}) invalid date format. msg = ${t.getMessage}"))
     }
 
   def apply(localDate: LocalDate): EDate = new EDate(localDate)
@@ -74,6 +72,7 @@ object EDate {
   private val `yyyyMMdd`: DateTimeFormatter = pattern("yyyyMMdd")
 
   private implicit class LocalDateHelper(val date: LocalDate) extends AnyVal {
+
     def epochMills: EpochMilliseconds = {
       val milli = date.atTime(0, 0).toInstant(zoneOffset).toEpochMilli
       EpochMilliseconds(milli)

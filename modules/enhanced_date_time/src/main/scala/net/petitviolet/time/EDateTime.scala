@@ -26,15 +26,15 @@ class EDateTime private (val value: ZonedDateTime) extends Ordered[EDateTime] {
   }
 
   /**
-    * "20161223"
-    */
+   * "20161223"
+   */
   def `yyyy-MM-dd`(implicit zoneId: ZoneId = defaultZoneId): String = {
     value.format(EDateTime.`yyyy-MM-dd`.withZone(zoneId))
   }
 
   /**
-    * "2016-12-23 14:15:33"
-    */
+   * "2016-12-23 14:15:33"
+   */
   def `yyyy-MM-dd HH:mm:ss`(implicit zoneId: ZoneId = defaultZoneId): String = {
     value.format(EDateTime.`yyyy-MM-dd HH:mm:ss`.withZone(zoneId))
   }
@@ -49,8 +49,6 @@ class EDateTime private (val value: ZonedDateTime) extends Ordered[EDateTime] {
   def asDate: EDate = EDate.apply(value.toLocalDate)
 }
 
-
-
 object EDateTime {
   import GlobalEDateTimeSettings._
 
@@ -61,26 +59,28 @@ object EDateTime {
     apply(value.atZone(zoneId))
   }
 
-  def now()(implicit zoneId: ZoneId = defaultZoneId) = EDateTime(ZonedDateTime.now(zoneId))
+  def now()(implicit zoneId: ZoneId = defaultZoneId) =
+    EDateTime(ZonedDateTime.now(zoneId))
 
   /**
-    * [[EpochMilliseconds]]から[[EDateTime]]を作成する
-    * @param milliseconds
-    * @return
-    */
-  def fromEpochMilli(milliseconds: EpochMilliseconds)(implicit zoneId: ZoneId = defaultZoneId): EDateTime = {
+   * [[EpochMilliseconds]]から[[EDateTime]]を作成する
+   * @param milliseconds
+   * @return
+   */
+  def fromEpochMilli(
+    milliseconds: EpochMilliseconds
+  )(implicit zoneId: ZoneId = defaultZoneId): EDateTime = {
     val dateTime = ZonedDateTimeHelper.fromEpochMillis(milliseconds)(zoneId)
     EDateTime(dateTime)
   }
 
   /**
-    * yyyy-MM-dd(e.g. 2017-03-15)から[[EDateTime]]を作成する
-    * @param value yyyy-MMdd形式の日付
-    * @return
-    */
+   * yyyy-MM-dd(e.g. 2017-03-15)から[[EDateTime]]を作成する
+   * @param value yyyy-MMdd形式の日付
+   * @return
+   */
   def `from-yyyy-MM-dd`(value: String)(implicit zoneId: ZoneId = defaultZoneId): EDateTime = {
-    require(value.length == 10,
-            s"invalid date expression, $value length is not 10(YYYY-MM-DD)")
+    require(value.length == 10, s"invalid date expression, $value length is not 10(YYYY-MM-DD)")
 
     val yyyy = value.substring(0, 4).toInt
     val mm = value.substring(5, 7).toInt
@@ -103,15 +103,18 @@ object EDateTime {
   lazy val `2011/01/01 00:00:00UTC`: EDateTime =
     EDateTime(ZonedDateTime.of(2011, 1, 1, 0, 0, 0, 0, ZoneId.of("GMT")))
 
-  private implicit class ZonedDateTimeHelper(val zonedDateTime: ZonedDateTime)
-      extends AnyVal {
+  private implicit class ZonedDateTimeHelper(val zonedDateTime: ZonedDateTime) extends AnyVal {
+
     def epochMilli: EpochMilliseconds =
       ZonedDateTimeHelper.toEpochMillis(zonedDateTime)
   }
 
   private object ZonedDateTimeHelper {
+
     // epoch milliまわりはUTCで計算する
-    def fromEpochMillis(epochMilliseconds: EpochMilliseconds)(implicit zoneId: ZoneId = GlobalEDateTimeSettings.defaultZoneId) : ZonedDateTime =
+    def fromEpochMillis(
+      epochMilliseconds: EpochMilliseconds
+    )(implicit zoneId: ZoneId = GlobalEDateTimeSettings.defaultZoneId): ZonedDateTime =
       java.time.Instant
         .ofEpochMilli(epochMilliseconds.value)
         .atZone(zoneId)
