@@ -49,12 +49,7 @@ class EDateTime private (val value: ZonedDateTime) extends Ordered[EDateTime] {
   def asDate: EDate = EDate.apply(value.toLocalDate)
 }
 
-object GlobalEDateTimeSettings {
-  @volatile var defaultZoneId: ZoneId = ZoneId.systemDefault()
-  @volatile var defaultLocale: Locale = Locale.getDefault
-  def zoneOffset: ZoneOffset =
-    defaultZoneId.getRules.getOffset(Instant.now(Clock.system(defaultZoneId)))
-}
+
 
 object EDateTime {
   import GlobalEDateTimeSettings._
