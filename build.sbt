@@ -1,6 +1,6 @@
 val SCALA_VERSION = "2.12.8"
 val GROUP_ID = "net.petitviolet"
-val VERSION = "0.2.0"
+val VERSION = "0.2.1"
 
 val NAME = "enhanced_date_time"
 val CACHE_NAME = "enhanced_date_time_cache"
