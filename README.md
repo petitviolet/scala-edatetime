@@ -15,9 +15,11 @@ libraryDependencies += "net.petitviolet % "enhanced_date_time" % "<version>"
 ```scala
 import net.petitviolet.time._
 
+// if you needed. default is ZoneId.systemDefault
 GlobalEDateTimeSettings.zoneId = ZoneId.of("Asia/Tokyo")
 
 println(s"${EDateTime.now()}")
+println(s"${EDateTime.now()(ZoneId.of("America/New_York")}") // or provide zoneId explicitly
 ```
 
 ## cached date time
@@ -35,15 +37,9 @@ libraryDependencies += "net.petitviolet % "enhanced_date_time_cache" % "<version
 import net.petitviolet.time.cache.CachedDateTime
 import net.petitviolet.time._
 
-GlobalEDateTimeSettings.zoneId = ZoneId.of("Asia/Tokyo")
-
-CachedDateTime.init()
-
 println(s"before = ${CachedDateTime.now()}")
 Thread.sleep(3000L)
 println(s"after = ${CachedDateTime.now()}")
-
-CachedDateTime.shutdown()
 ```
 
 ## LICENSE
