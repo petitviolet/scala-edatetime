@@ -2,9 +2,6 @@ package net.petitviolet.time
 
 import java.time._
 import java.time.format.DateTimeFormatter
-import java.time.temporal.{ Temporal, TemporalAmount, TemporalUnit }
-import java.util
-import java.util.concurrent.TimeUnit
 
 import scala.concurrent.duration.Duration
 import scala.util.{ Failure, Try }

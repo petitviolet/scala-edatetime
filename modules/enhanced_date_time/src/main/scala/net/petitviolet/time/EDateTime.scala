@@ -1,44 +1,65 @@
 package net.petitviolet.time
 
 import java.time.format.DateTimeFormatter
-import java.time.temporal.{ ChronoUnit, TemporalUnit }
+import java.time.temporal.ChronoUnit
 import java.time.{ Duration => _, _ }
-import java.util.Locale
 
 import scala.concurrent.duration.Duration
 
-class EDateTime private (val value: ZonedDateTime) extends Ordered[EDateTime] {
+/**
+ * enhanced DateTime API wrapping java.time.ZonedDateTime.
+ *
+ * @param value java.time.ZonedDateTime
+ */
+class EDateTime private(val value: ZonedDateTime) extends Ordered[EDateTime] {
   import EDateTime.ZonedDateTimeHelper
   import GlobalEDateTimeSettings.defaultZoneId
-  import TimeOps._
 
   override def compare(that: EDateTime): Int =
     value.compareTo(that.value)
 
+  /**
+   * milliseconds passed from 1970/01/01
+   */
   lazy val epochMillis: EpochMilliseconds = value.epochMilli
 
+  /**
+   * plus operator
+   * @param duration [[scala.concurrent.duration.Duration]]
+   * @return [[EDateTime]]
+   */
   def +(duration: Duration): EDateTime = {
     EDateTime(value.plus(duration.toMillis, ChronoUnit.MILLIS))
   }
 
+  /**
+   * minus operator
+   * @param duration [[scala.concurrent.duration.Duration]]
+   * @return [[EDateTime]]
+   */
   def -(duration: Duration): EDateTime = {
     EDateTime(value.minus(duration.toMillis, ChronoUnit.MILLIS))
   }
 
   /**
-   * "20161223"
+   * format as 'yyyy-MM-dd' (e.g. "2016-12-23")
    */
   def `yyyy-MM-dd`(implicit zoneId: ZoneId = defaultZoneId): String = {
     value.format(EDateTime.`yyyy-MM-dd`.withZone(zoneId))
   }
 
   /**
-   * "2016-12-23 14:15:33"
+   * format as 'yyyy-MM-dd HH:mm:ss' (e.g. "2016-12-23 14:15:33")
    */
   def `yyyy-MM-dd HH:mm:ss`(implicit zoneId: ZoneId = defaultZoneId): String = {
     value.format(EDateTime.`yyyy-MM-dd HH:mm:ss`.withZone(zoneId))
   }
 
+  /**
+   * format as provided format
+   * @param formatter [[java.time.format.DateTimeFormatter]]
+   * @return formatted String
+   */
   def format(formatter: DateTimeFormatter): String =
     value.format(formatter)
 
@@ -50,22 +71,42 @@ class EDateTime private (val value: ZonedDateTime) extends Ordered[EDateTime] {
 }
 
 object EDateTime {
+
   import GlobalEDateTimeSettings._
 
+  /**
+   * specified datetime factory for [[EDateTime]]
+   *
+   * @param value [[java.time.ZonedDateTime]]
+   * @return [[EDateTime]]
+   */
   def apply(value: ZonedDateTime): EDateTime =
     new EDateTime(value)
 
+  /**
+   * specified datetime factory for [[EDateTime]]
+   *
+   * @param value [[java.time.LocalDateTime]]
+   * @param zoneId [[java.time.ZoneId]]
+   * @return [[EDateTime]]
+   */
   def apply(value: LocalDateTime)(implicit zoneId: ZoneId = defaultZoneId): EDateTime = {
     apply(value.atZone(zoneId))
   }
 
+  /**
+   * current datetime factory for [[EDateTime]]
+   * @param zoneId [[java.time.ZoneId]]
+   * @return [[EDateTime]]
+   */
   def now()(implicit zoneId: ZoneId = defaultZoneId) =
     EDateTime(ZonedDateTime.now(zoneId))
 
   /**
-   * [[EpochMilliseconds]]から[[EDateTime]]を作成する
-   * @param milliseconds
-   * @return
+   * factory for [[EDateTime]] from [[EpochMilliseconds]]
+   *
+   * @param milliseconds [[EpochMilliseconds]]
+   * @return [[EDateTime]]
    */
   def fromEpochMilli(
     milliseconds: EpochMilliseconds
@@ -75,9 +116,10 @@ object EDateTime {
   }
 
   /**
-   * yyyy-MM-dd(e.g. 2017-03-15)から[[EDateTime]]を作成する
-   * @param value yyyy-MMdd形式の日付
-   * @return
+   * create [[EDateTime]] from yyyy-MM-dd format String(e.g. 2017-03-15)
+   *
+   * @param value String formatted with 'yyyy-MM-dd'
+   * @return [[EDateTime]]
    */
   def `from-yyyy-MM-dd`(value: String)(implicit zoneId: ZoneId = defaultZoneId): EDateTime = {
     require(value.length == 10, s"invalid date expression, $value length is not 10(YYYY-MM-DD)")
@@ -89,6 +131,12 @@ object EDateTime {
     EDateTime(date)
   }
 
+  /**
+   * create [[EDateTime]] from yyyy-MM-dd HH:mm:ss format String(e.g. 2017-03-15 12:23:45)
+   *
+   * @param value String formatted with 'yyyy-MM-dd HH:mm:ss'
+   * @return [[EDateTime]]
+   */
   def `from_yyyy-MM-dd HH:mm:ss`(value: String): EDateTime = {
     apply(LocalDateTime.parse(value, `yyyy-MM-dd HH:mm:ss`))
   }
@@ -111,7 +159,6 @@ object EDateTime {
 
   private object ZonedDateTimeHelper {
 
-    // epoch milliまわりはUTCで計算する
     def fromEpochMillis(
       epochMilliseconds: EpochMilliseconds
     )(implicit zoneId: ZoneId = GlobalEDateTimeSettings.defaultZoneId): ZonedDateTime =
