@@ -38,6 +38,7 @@ private class CachedEDateTimeUpdater() {
   private lazy val timer = new Timer()
 
   def init(period: Duration = 800L.milliseconds): Unit = {
+    updateTask.run() // 即時実行
     timer.schedule(updateTask, 0L, period.toMillis)
     sys.addShutdownHook {
       shutdown()

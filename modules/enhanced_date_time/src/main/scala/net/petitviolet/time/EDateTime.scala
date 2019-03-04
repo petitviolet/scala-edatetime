@@ -4,14 +4,14 @@ import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.time.{ Duration => _, _ }
 
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration.FiniteDuration
 
 /**
  * enhanced DateTime API wrapping java.time.ZonedDateTime.
  *
  * @param value java.time.ZonedDateTime
  */
-class EDateTime private(val value: ZonedDateTime) extends Ordered[EDateTime] {
+class EDateTime private (val value: ZonedDateTime) extends Ordered[EDateTime] { self =>
   import EDateTime.ZonedDateTimeHelper
   import GlobalEDateTimeSettings.defaultZoneId
 
@@ -28,7 +28,7 @@ class EDateTime private(val value: ZonedDateTime) extends Ordered[EDateTime] {
    * @param duration [[scala.concurrent.duration.Duration]]
    * @return [[EDateTime]]
    */
-  def +(duration: Duration): EDateTime = {
+  def +(duration: FiniteDuration): EDateTime = {
     EDateTime(value.plus(duration.toMillis, ChronoUnit.MILLIS))
   }
 
@@ -37,8 +37,12 @@ class EDateTime private(val value: ZonedDateTime) extends Ordered[EDateTime] {
    * @param duration [[scala.concurrent.duration.Duration]]
    * @return [[EDateTime]]
    */
-  def -(duration: Duration): EDateTime = {
+  def -(duration: FiniteDuration): EDateTime = {
     EDateTime(value.minus(duration.toMillis, ChronoUnit.MILLIS))
+  }
+
+  def diff(other: EDateTime): FiniteDuration = {
+    self.epochMillis diff other.epochMillis
   }
 
   /**

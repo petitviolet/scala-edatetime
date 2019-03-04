@@ -1,9 +1,9 @@
 package net.petitviolet.time
 
-import java.time._
+import java.time.{ Duration => _, _ }
 import java.time.format.DateTimeFormatter
 
-import scala.concurrent.duration.Duration
+import scala.concurrent.duration.FiniteDuration
 import scala.util.{ Failure, Try }
 
 class EDate private (val value: LocalDate) extends Ordered[EDate] { self =>
@@ -11,9 +11,9 @@ class EDate private (val value: LocalDate) extends Ordered[EDate] { self =>
 
   override def compare(that: EDate): Int = self.value.compareTo(that.value)
 
-  def +(duration: Duration): EDate = new EDate(value.plusDays(duration.toDays))
+  def +(duration: FiniteDuration): EDate = new EDate(value.plusDays(duration.toDays))
 
-  def -(duration: Duration): EDate = new EDate(value.minusDays(duration.toDays))
+  def -(duration: FiniteDuration): EDate = new EDate(value.minusDays(duration.toDays))
 
   lazy val epochMillis: EpochMilliseconds = value.epochMills
 

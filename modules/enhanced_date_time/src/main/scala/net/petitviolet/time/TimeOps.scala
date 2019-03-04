@@ -1,6 +1,7 @@
 package net.petitviolet.time
 
 import scala.annotation.implicitNotFound
+import scala.concurrent.duration.FiniteDuration
 
 object TimeOps {
   implicit class TimeOperatorOps[T](val target: T) extends AnyVal {
@@ -28,7 +29,12 @@ sealed trait TimeOps[T] extends Any {
 }
 
 // elapsed milliseconds from 1970/01/01
-case class EpochMilliseconds(value: Long) extends AnyVal with Ordered[EpochMilliseconds] {
+case class EpochMilliseconds(value: Long) extends AnyVal with Ordered[EpochMilliseconds] { self =>
   override def compare(that: EpochMilliseconds): Int =
     this.value compare that.value
+
+  def diff(other: EpochMilliseconds): FiniteDuration = {
+    import scala.concurrent.duration._
+    (self.value - other.value).milli
+  }
 }
