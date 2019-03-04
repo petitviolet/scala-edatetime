@@ -1,6 +1,6 @@
 # scala enhanced date time
 
-[![MavenCentral](https://maven-badges.herokuapp.com/maven-central/net.petitviolet/enhanced_date_time_2.12/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.petitviolet/enhanced_date_time_2.12/badge.svg)
+[![MavenCentral](https://maven-badges.herokuapp.com/maven-central/net.petitviolet/enhanced_date_time_2.12/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.petitviolet/enhanced_date_time_2.12)
 
 ## setup
 
@@ -25,49 +25,48 @@ println(s"${EDateTime.now()(ZoneId.of("America/New_York")}") // or provide zoneI
 - more samples
 
 ```scala
-@ import $ivy.`net.petitviolet::enhanced_date_time:0.2.0`; import net.petitviolet.time._; 
+@ import $ivy.`net.petitviolet::enhanced_date_time:0.3.0`; import net.petitviolet.time._; 
 import $ivy.$                                          ;
 import net.petitviolet.time._;
-
-@ import java.time.ZoneId
-import java.time.ZoneId
 
 @ EDateTime.now()
 res1: EDateTime = EDateTime(2019-03-03T23:05:39.835801+09:00[Asia/Tokyo])
 
-@ EDateTime.now()(ZoneId.of("UTC"))
+@ EDateTime.now()(ZoneIds.UTC)
 res2: EDateTime = EDateTime(2019-03-03T14:05:48.515310Z[UTC])
 
-@ EDateTime.now()(ZoneId.of("UTC")).`yyyy-MM-dd HH:mm:ss`
+@ EDateTime.now()(ZoneIds.UTC).`yyyy-MM-dd HH:mm:ss`
 res3: String = "2019-03-03 23:06:09"
 
-@ EDateTime.now()(ZoneId.of("UTC")).`yyyy-MM-dd HH:mm:ss`(ZoneId.of("UTC"))
+@ EDateTime.now()(ZoneIds.UTC).`yyyy-MM-dd HH:mm:ss`(ZoneIds.UTC)
 res4: String = "2019-03-03 14:06:24"
 
-@ implicit val zoneId = ZoneId.of("UTC")
+@ implicit val zoneId = ZoneIds.UTC
 zoneId: ZoneId = UTC
 
 @ EDateTime.now().`yyyy-MM-dd HH:mm:ss`
 res6: String = "2019-03-03 14:07:00"
 
-@ import $ivy.`net.petitviolet::enhanced_date_time_cache:0.2.0`; import net.petitviolet.time.cache._
+@ import $ivy.`net.petitviolet::enhanced_date_time_cache:0.3.0`; import net.petitviolet.time.cache._
 import $ivy.$                                                ;
 import net.petitviolet.time.cache._
 
 @ (1 to 10) foreach { _ =>
-    println(s"${EDateTime.now()} : ${CachedEDateTime.now()}")
+    val now = EDateTime.now()
+    val cache = CachedEDateTime.now()
+    println(s"${now} : ${cache}, diff: ${now diff cache}")
     Thread.sleep(200L)
   }
-EDateTime(2019-03-03T14:07:19.661515Z[UTC]) : EDateTime(2019-03-03T23:07:19.675589+09:00[Asia/Tokyo])
-EDateTime(2019-03-03T14:07:19.882114Z[UTC]) : EDateTime(2019-03-03T23:07:19.675589+09:00[Asia/Tokyo])
-EDateTime(2019-03-03T14:07:20.086092Z[UTC]) : EDateTime(2019-03-03T23:07:19.675589+09:00[Asia/Tokyo])
-EDateTime(2019-03-03T14:07:20.291306Z[UTC]) : EDateTime(2019-03-03T23:07:19.675589+09:00[Asia/Tokyo])
-EDateTime(2019-03-03T14:07:20.493215Z[UTC]) : EDateTime(2019-03-03T23:07:20.475501+09:00[Asia/Tokyo])
-EDateTime(2019-03-03T14:07:20.693851Z[UTC]) : EDateTime(2019-03-03T23:07:20.475501+09:00[Asia/Tokyo])
-EDateTime(2019-03-03T14:07:20.898141Z[UTC]) : EDateTime(2019-03-03T23:07:20.475501+09:00[Asia/Tokyo])
-EDateTime(2019-03-03T14:07:21.101038Z[UTC]) : EDateTime(2019-03-03T23:07:20.475501+09:00[Asia/Tokyo])
-EDateTime(2019-03-03T14:07:21.304894Z[UTC]) : EDateTime(2019-03-03T23:07:21.276991+09:00[Asia/Tokyo])
-EDateTime(2019-03-03T14:07:21.506776Z[UTC]) : EDateTime(2019-03-03T23:07:21.276991+09:00[Asia/Tokyo])
+EDateTime(2019-03-04T13:36:37.342389+09:00[Asia/Tokyo]) : EDateTime(2019-03-04T13:36:37.112854+09:00[Asia/Tokyo]), diff: 230 milliseconds
+EDateTime(2019-03-04T13:36:37.549710+09:00[Asia/Tokyo]) : EDateTime(2019-03-04T13:36:37.112854+09:00[Asia/Tokyo]), diff: 437 milliseconds
+EDateTime(2019-03-04T13:36:37.753297+09:00[Asia/Tokyo]) : EDateTime(2019-03-04T13:36:37.112854+09:00[Asia/Tokyo]), diff: 641 milliseconds
+EDateTime(2019-03-04T13:36:37.957288+09:00[Asia/Tokyo]) : EDateTime(2019-03-04T13:36:37.913841+09:00[Asia/Tokyo]), diff: 44 milliseconds
+EDateTime(2019-03-04T13:36:38.161705+09:00[Asia/Tokyo]) : EDateTime(2019-03-04T13:36:37.913841+09:00[Asia/Tokyo]), diff: 248 milliseconds
+EDateTime(2019-03-04T13:36:38.364396+09:00[Asia/Tokyo]) : EDateTime(2019-03-04T13:36:37.913841+09:00[Asia/Tokyo]), diff: 451 milliseconds
+EDateTime(2019-03-04T13:36:38.568921+09:00[Asia/Tokyo]) : EDateTime(2019-03-04T13:36:37.913841+09:00[Asia/Tokyo]), diff: 655 milliseconds
+EDateTime(2019-03-04T13:36:38.771602+09:00[Asia/Tokyo]) : EDateTime(2019-03-04T13:36:38.716515+09:00[Asia/Tokyo]), diff: 55 milliseconds
+EDateTime(2019-03-04T13:36:38.976066+09:00[Asia/Tokyo]) : EDateTime(2019-03-04T13:36:38.716515+09:00[Asia/Tokyo]), diff: 260 milliseconds
+EDateTime(2019-03-04T13:36:39.180846+09:00[Asia/Tokyo]) : EDateTime(2019-03-04T13:36:38.716515+09:00[Asia/Tokyo]), diff: 464 milliseconds
 
 @ import scala.concurrent.duration.Duration._
 import scala.concurrent.duration.Duration._
@@ -80,18 +79,18 @@ res7_2: EDateTime = EDateTime(2019-06-11T14:11:09.612485Z[UTC])
 @ (EDateTime.now() - 100.days) < EDateTime.now() // compare
 res8: Boolean = true
 
-@ EDateTime.now()(ZoneId.of("UTC")).epochMillis; EDateTime.now()(ZoneId.of("Asia/Tokyo")).epochMillis // epoch milliseconds
+@ EDateTime.now()(ZoneIds.UTC).epochMillis; EDateTime.now()(ZoneIds.`Asia/Tokyo`)).epochMillis // epoch milliseconds
 res9_0: EpochMilliseconds = EpochMilliseconds(1551622408081L)
 res9_1: EpochMilliseconds = EpochMilliseconds(1551622408081L)
 
-@ EDateTime.fromEpochMilli(EpochMilliseconds(1551622408081L)); EDateTime.fromEpochMilli(EpochMilliseconds(1551622408081L))(ZoneId.of("Asia/Tokyo"))
+@ EDateTime.fromEpochMilli(EpochMilliseconds(1551622408081L)); EDateTime.fromEpochMilli(EpochMilliseconds(1551622408081L))(ZoneIds.`Asia/Tokyo`))
 res10_0: EDateTime = EDateTime(2019-03-03T14:13:28.081Z[UTC])
 res10_1: EDateTime = EDateTime(2019-03-03T23:13:28.081+09:00[Asia/Tokyo])
 ```
 
 ## cached date time
 
-Also provide `enhanced_date_time_cache` library, caching `EDateTime` instance and reload it by 1000ms.  
+Also provide `enhanced_date_time_cache` library, caching `EDateTime` instance and reload it by 800ms.  
 I propose to use this when your project needs datetime frequently but not needs high-precision.
 
 ```scala
@@ -102,7 +101,6 @@ libraryDependencies += "net.petitviolet % "enhanced_date_time_cache" % "<version
 
 ```scala
 import net.petitviolet.time.cache.CachedDateTime
-import net.petitviolet.time._
 
 println(s"before = ${CachedDateTime.now()}")
 Thread.sleep(3000L)
