@@ -1,19 +1,19 @@
-# scala enhanced date time
+# edatetime - enhanced date time library for Scala
 
-[![MavenCentral](https://maven-badges.herokuapp.com/maven-central/net.petitviolet/enhanced_date_time_2.12/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.petitviolet/enhanced_date_time_2.12)
+[![MavenCentral](https://maven-badges.herokuapp.com/maven-central/net.petitviolet/edatetime_2.12/badge.svg)](https://maven-badges.herokuapp.com/maven-central/net.petitviolet/edatetime_2.12)
 
 ## setup
 
 in <project root>/build.sbt.
 
 ```scala
-libraryDependencies += "net.petitviolet % "enhanced_date_time" % "<version>"
+libraryDependencies += "net.petitviolet % "edatetime" % "<version>"
 ```
 
 ## Usage
 
 ```scala
-import net.petitviolet.time._
+import net.petitviolet.edatetime._
 
 // if you needed. default is ZoneId.systemDefault
 GlobalEDateTimeSettings.zoneId = ZoneId.of("Asia/Tokyo")
@@ -25,9 +25,9 @@ println(s"${EDateTime.now()(ZoneId.of("America/New_York")}") // or provide zoneI
 - more samples
 
 ```scala
-@ import $ivy.`net.petitviolet::enhanced_date_time:0.3.0`; import net.petitviolet.time._; 
+@ import $ivy.`net.petitviolet::edatetime:0.3.0`; import net.petitviolet.edatetime._; 
 import $ivy.$                                          ;
-import net.petitviolet.time._;
+import net.petitviolet.edatetime._;
 
 @ EDateTime.now()
 res1: EDateTime = EDateTime(2019-03-03T23:05:39.835801+09:00[Asia/Tokyo])
@@ -47,9 +47,9 @@ zoneId: ZoneId = UTC
 @ EDateTime.now().`yyyy-MM-dd HH:mm:ss`
 res6: String = "2019-03-03 14:07:00"
 
-@ import $ivy.`net.petitviolet::enhanced_date_time_cache:0.3.0`; import net.petitviolet.time.cache._
+@ import $ivy.`net.petitviolet::cached-edatetime:0.3.0`; import net.petitviolet.edatetime.cache._
 import $ivy.$                                                ;
-import net.petitviolet.time.cache._
+import net.petitviolet.edatetime.cache._
 
 @ (1 to 10) foreach { _ =>
     val now = EDateTime.now()
@@ -94,13 +94,13 @@ Also provide `enhanced_date_time_cache` library, caching `EDateTime` instance an
 I propose to use this when your project needs datetime frequently but not needs high-precision.
 
 ```scala
-libraryDependencies += "net.petitviolet % "enhanced_date_time_cache" % "<version>"
+libraryDependencies += "net.petitviolet" % "cached-edatetime" % "<version>"
 ```
 
 ### Usage
 
 ```scala
-import net.petitviolet.time.cache.CachedDateTime
+import net.petitviolet.edatetime.cache.CachedDateTime
 
 println(s"before = ${CachedDateTime.now()}")
 Thread.sleep(3000L)
@@ -109,4 +109,4 @@ println(s"after = ${CachedDateTime.now()}")
 
 ## LICENSE
 
-[Apache-2.0](https://github.com/petitviolet/scala_enhanced_datetime/blob/master/LICENSE)
+[Apache-2.0](https://github.com/petitviolet/scala-edatetime/blob/master/LICENSE)

@@ -1,4 +1,4 @@
-package net.petitviolet.time
+package net.petitviolet.edatetime
 
 import java.time.ZoneId
 

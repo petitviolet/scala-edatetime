@@ -1,9 +1,9 @@
 val SCALA_VERSION = "2.12.8"
 val GROUP_ID = "net.petitviolet"
-val VERSION = "0.2.1"
+val VERSION = "0.3.0"
 
-val NAME = "enhanced_date_time"
-val CACHE_NAME = "enhanced_date_time_cache"
+val NAME = "edatetime"
+val CACHE_NAME = "cached-edatetime"
 
 def commonSettings(moduleName: String) = Seq(
   name := moduleName,
@@ -26,18 +26,18 @@ def commonSettings(moduleName: String) = Seq(
 
 )
 
-lazy val enhancedDateTimeRoot = (project in file("."))
+lazy val edatetimeRoot = (project in file("."))
   .settings(commonSettings("enhancedDateTimeRoot"))
-  .aggregate(enhancedDateTimeCache, enhancedDateTime)
+  .aggregate(cachedEdatetime, edatetime)
 
-lazy val enhancedDateTime = (project in file(s"modules/$NAME"))
+lazy val edatetime = (project in file(s"modules/$NAME".replace('-', '_')))
   .settings(commonSettings(NAME))
 
-lazy val enhancedDateTimeCache = (project in file(s"modules/$CACHE_NAME"))
+lazy val cachedEdatetime = (project in file(s"modules/$CACHE_NAME".replace('-', '_')))
   .settings(commonSettings(CACHE_NAME))
-  .dependsOn(enhancedDateTime)
+  .dependsOn(edatetime)
 
-lazy val example = (project in file("modules/example"))
+lazy val example = (project in file("./example"))
   .settings(commonSettings("example"))
     .settings(
 //      libraryDependencies ++= List(
@@ -45,5 +45,5 @@ lazy val example = (project in file("modules/example"))
 //        GROUP_ID %% CACHE_NAME % VERSION
 //      )
     )
-   .dependsOn(enhancedDateTime, enhancedDateTimeCache)
+   .dependsOn(edatetime, cachedEdatetime)
 

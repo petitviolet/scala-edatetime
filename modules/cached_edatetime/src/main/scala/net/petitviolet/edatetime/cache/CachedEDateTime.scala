@@ -1,9 +1,9 @@
-package net.petitviolet.time.cache
+package net.petitviolet.edatetime.cache
 
 import java.util.concurrent.atomic.AtomicReference
 import java.util.{ Timer, TimerTask }
 
-import net.petitviolet.time.EDateTime
+import net.petitviolet.edatetime.EDateTime
 
 import scala.concurrent.duration._
 

@@ -1,7 +1,7 @@
-package net.petitviolet.time.example
+package net.petitviolet.edatetime.example
 
-import net.petitviolet.time.cache.CachedEDateTime
-import net.petitviolet.time._
+import net.petitviolet.edatetime.cache.CachedEDateTime
+import net.petitviolet.edatetime._
 
 object example extends App {
   println("=====================")
