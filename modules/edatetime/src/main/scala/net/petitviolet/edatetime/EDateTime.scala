@@ -3,6 +3,7 @@ package net.petitviolet.edatetime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 import java.time.{ Duration => _, _ }
+import scala.concurrent.duration._
 
 import scala.concurrent.duration.FiniteDuration
 
@@ -12,7 +13,7 @@ import scala.concurrent.duration.FiniteDuration
  * @param value java.time.ZonedDateTime
  */
 class EDateTime private (val value: ZonedDateTime) extends Ordered[EDateTime] { self =>
-  import EDateTime.ZonedDateTimeHelper
+  import Implicits._
   import GlobalEDateTimeSettings.defaultZoneId
 
   override def compare(that: EDateTime): Int =
@@ -29,7 +30,7 @@ class EDateTime private (val value: ZonedDateTime) extends Ordered[EDateTime] { 
    * @return [[EDateTime]]
    */
   def +(duration: FiniteDuration): EDateTime = {
-    EDateTime(value.plus(duration.toMillis, ChronoUnit.MILLIS))
+    EDateTime(value.plus(duration.toNanos, ChronoUnit.NANOS))
   }
 
   /**
@@ -38,25 +39,42 @@ class EDateTime private (val value: ZonedDateTime) extends Ordered[EDateTime] { 
    * @return [[EDateTime]]
    */
   def -(duration: FiniteDuration): EDateTime = {
-    EDateTime(value.minus(duration.toMillis, ChronoUnit.MILLIS))
+    EDateTime(value.minus(duration.toNanos, ChronoUnit.NANOS))
   }
 
   def diff(other: EDateTime): FiniteDuration = {
     self.epochMillis diff other.epochMillis
   }
 
+  def to(limit: EDateTime, step: FiniteDuration = 1.millis): Iterator[EDateTime] = {
+    new Iterator[EDateTime] {
+      private var current = self
+      override def hasNext: Boolean = (current + step) < limit
+
+      override def next(): EDateTime = {
+        val _next = current
+        current += step
+        _next
+      }
+    }
+  }
+
+  def until(limit: EDateTime, step: FiniteDuration = 1.millis): Iterator[EDateTime] = {
+    to(limit - step)
+  }
+
   /**
    * format as 'yyyy-MM-dd' (e.g. "2016-12-23")
    */
   def `yyyy-MM-dd`(implicit zoneId: ZoneId = defaultZoneId): String = {
-    value.format(EDateTime.`yyyy-MM-dd`.withZone(zoneId))
+    value.format(formats.`yyyy-MM-dd`.withZone(zoneId))
   }
 
   /**
    * format as 'yyyy-MM-dd HH:mm:ss' (e.g. "2016-12-23 14:15:33")
    */
   def `yyyy-MM-dd HH:mm:ss`(implicit zoneId: ZoneId = defaultZoneId): String = {
-    value.format(EDateTime.`yyyy-MM-dd HH:mm:ss`.withZone(zoneId))
+    value.format(formats.`yyyy-MM-dd HH:mm:ss`.withZone(zoneId))
   }
 
   /**
@@ -115,7 +133,7 @@ object EDateTime {
   def fromEpochMilli(
     milliseconds: EpochMilliseconds
   )(implicit zoneId: ZoneId = defaultZoneId): EDateTime = {
-    val dateTime = ZonedDateTimeHelper.fromEpochMillis(milliseconds)(zoneId)
+    val dateTime = Implicits.fromEpochMillis(milliseconds)(zoneId)
     EDateTime(dateTime)
   }
 
@@ -142,35 +160,20 @@ object EDateTime {
    * @return [[EDateTime]]
    */
   def `from_yyyy-MM-dd HH:mm:ss`(value: String): EDateTime = {
-    apply(LocalDateTime.parse(value, `yyyy-MM-dd HH:mm:ss`))
+    apply(LocalDateTime.parse(value, formats.`yyyy-MM-dd HH:mm:ss`))
   }
-
-  private lazy val `yyyy-MM-dd`: DateTimeFormatter =
-    DateTimeFormatter.ofPattern("yyyy-MM-dd", defaultLocale)
-
-  private lazy val `yyyy-MM-dd HH:mm:ss`: DateTimeFormatter =
-    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", defaultLocale)
 
   // 2011/01/01 00:00:00Z+00:00
   lazy val `2011/01/01 00:00:00UTC`: EDateTime =
     EDateTime(ZonedDateTime.of(2011, 1, 1, 0, 0, 0, 0, ZoneId.of("GMT")))
 
-  private implicit class ZonedDateTimeHelper(val zonedDateTime: ZonedDateTime) extends AnyVal {
+}
 
-    def epochMilli: EpochMilliseconds =
-      ZonedDateTimeHelper.toEpochMillis(zonedDateTime)
-  }
+object formats {
 
-  private object ZonedDateTimeHelper {
+  val `yyyy-MM-dd`: DateTimeFormatter =
+    DateTimeFormatter.ofPattern("yyyy-MM-dd", GlobalEDateTimeSettings.defaultLocale)
 
-    def fromEpochMillis(
-      epochMilliseconds: EpochMilliseconds
-    )(implicit zoneId: ZoneId = GlobalEDateTimeSettings.defaultZoneId): ZonedDateTime =
-      java.time.Instant
-        .ofEpochMilli(epochMilliseconds.value)
-        .atZone(zoneId)
-
-    def toEpochMillis(localDateTime: ZonedDateTime): EpochMilliseconds =
-      EpochMilliseconds(localDateTime.toInstant.toEpochMilli)
-  }
+  val `yyyy-MM-dd HH:mm:ss`: DateTimeFormatter =
+    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss", GlobalEDateTimeSettings.defaultLocale)
 }
